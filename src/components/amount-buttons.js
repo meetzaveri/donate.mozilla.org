@@ -14,6 +14,16 @@ var AmountButton = React.createClass({
     currencyCode: React.PropTypes.string
   },
 
+  componentDidMount: function() {
+    if (this.input.checked) {
+      this.props.onChange(this.input.value);
+    }
+  },
+
+  onChange: function(e) {
+    this.props.onChange(e.currentTarget.value);
+  },
+
   onClickEvent: function(e) {
     reactGA.event({
       category: "User Flow",
@@ -27,9 +37,10 @@ var AmountButton = React.createClass({
     if (this.props.value === this.props.amount) {
       checked = true;
     }
+
     return (
       <div className="third">
-        <input onChange={this.props.onChange} onClick={this.onClickEvent} checked={checked} className="amount-radio" type="radio" name="donation_amount" value={this.props.value} id={"amount-" + this.props.value}/>
+        <input ref={(input) => {this.input = input;}} onChange={this.onChange} onClick={this.onClickEvent} checked={checked} className="amount-radio" type="radio" name="donation_amount" value={this.props.value} id={"amount-" + this.props.value}/>
         <label htmlFor={"amount-" + this.props.value} className="amount-button large-label-size">
           { this.props.currencyCode && this.props.value ?
             <FormattedNumber
@@ -56,6 +67,14 @@ var AmountOtherButton = React.createClass({
     currencySymbol: React.PropTypes.string,
     placeholder: React.PropTypes.string
   },
+  componentDidMount: function() {
+    if (this.radioInput.checked) {
+      this.setState({
+        inputValue: this.textInput.value
+      });
+      this.props.onInputChange(this.textInput.value);
+    }
+  },
   onRadioClick: function() {
     document.querySelector("#amount-other-input").focus();
     reactGA.event({
@@ -76,7 +95,7 @@ var AmountOtherButton = React.createClass({
     return (
       <div className="two-third">
         <div className="amount-other-container">
-          <input id="amount-other" type="radio" name="donation_amount"
+          <input ref={(input) => {this.radioInput = input;}} id="amount-other" type="radio" name="donation_amount"
             checked={this.props.checked}
             onClick={this.onRadioClick}
             onChange={this.onRadioChange}
@@ -91,7 +110,8 @@ var AmountOtherButton = React.createClass({
             </span>
           </label>
           <div className="amount-other-wrapper">
-            <AmountInput id="amount-other-input"
+            <AmountInput ref={(input) => {this.textInput = input;}}
+              id="amount-other-input"
               className="medium-label-size" type="text"
               onInputChange={this.props.onInputChange}
               amount={this.props.amount}
@@ -119,8 +139,8 @@ var AmountButtons = React.createClass({
       userInputting: false
     };
   },
-  onChange: function(e) {
-    this.setAmount(e.currentTarget.value, false);
+  onChange: function(amount) {
+    this.setAmount(amount, false);
   },
   setAmount: function(amount, userInputting) {
     this.setState({

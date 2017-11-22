@@ -5,6 +5,12 @@ import { connect } from 'react-redux';
 import { setCurrency } from '../actions';
 
 var CurrencyDropdown = React.createClass({
+  componentDidMount: function() {
+    var currency = currencyData[this.selectElement.value];
+    if (currency) {
+      this.props.setCurrency(currency);
+    }
+  },
   onChange: function(e) {
     var currency = currencyData[e.currentTarget.value];
     if (currency) {
@@ -18,7 +24,7 @@ var CurrencyDropdown = React.createClass({
   },
   render: function() {
     return (
-      <select onChange={this.onChange} className="currency-dropdown" value={this.props.currency.code}>
+      <select ref={(select) => {this.selectElement = select;}} onChange={this.onChange} className="currency-dropdown" value={this.props.currency.code}>
         {Object.keys(currencyData).map(function(currency, i) {
           return (
             <option value={currency} key={i}>

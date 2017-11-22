@@ -7,6 +7,13 @@ var DonationFrequency = React.createClass({
   contextTypes: {
     intl: React.PropTypes.object
   },
+  componentDidMount: function() {
+    if (this.singleInput.checked) {
+      this.props.setFrequency(this.singleInput.value);
+    } else if (this.monthlyInput.checked) {
+      this.props.setFrequency(this.monthlyInput.value);
+    }
+  },
   onChange: function(e) {
     this.props.setFrequency(e.currentTarget.value);
     reactGA.event({
@@ -27,13 +34,13 @@ var DonationFrequency = React.createClass({
       <div>
         <div className="row donation-frequency">
           <div className="frequency-radio">
-            <input name={inputName} checked={frequency !== "monthly"} className="one-time-payment"
+            <input ref={(input) => {this.singleInput = input;}} name={inputName} checked={frequency !== "monthly"} className="one-time-payment"
               onChange={this.onChange} type="radio" value="single" id={onTimeId}
             />
             <label htmlFor={onTimeId} className="medium-label-size">{this.context.intl.formatMessage({id: 'one_time'})}</label>
           </div>
           <div className="frequency-radio">
-            <input name={inputName} checked={frequency === "monthly"} className="monthly-payment"
+            <input ref={(input) => {this.monthlyInput = input;}} name={inputName} checked={frequency === "monthly"} className="monthly-payment"
               onChange={this.onChange} type="radio" value="monthly" id={monthlyId}
             />
             <label htmlFor={monthlyId} className="medium-label-size">{this.context.intl.formatMessage({id: 'monthly'})}</label>
