@@ -27,6 +27,17 @@ const donateApp = (state = initialState, action) => {
       amount: amount,
       amountError: ''
     });
+  case 'SET_POSITION':
+    presets = currencyData[state.currency.code].presets[state.frequency];
+    position = action.data;
+    amount = state.amount;
+    if (position !== -1) {
+      amount = presets[position];
+    }
+    return assign({}, state, {
+      amount: amount,
+      amountError: ''
+    });
   case 'SET_AMOUNT':
     return assign({}, state, {
       amount: action.data,

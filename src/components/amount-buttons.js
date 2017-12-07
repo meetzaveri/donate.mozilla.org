@@ -4,6 +4,7 @@ import { FormattedMessage, FormattedNumber } from 'react-intl';
 import ErrorMessage from './error.js';
 import { connect } from 'react-redux';
 import { setAmount } from '../actions';
+import { setPosition } from '../actions';
 import AmountInput from './amount-input.js';
 
 var AmountButton = React.createClass({
@@ -16,12 +17,12 @@ var AmountButton = React.createClass({
 
   componentDidMount: function() {
     if (this.input.checked) {
-      this.props.onChange(this.input.value);
+      this.props.onChange(this.props.position);
     }
   },
 
   onChange: function(e) {
-    this.props.onChange(e.currentTarget.value);
+    this.props.onChange(this.props.position);
   },
 
   onClickEvent: function(e) {
@@ -68,11 +69,12 @@ var AmountOtherButton = React.createClass({
     placeholder: React.PropTypes.string
   },
   componentDidMount: function() {
+    var inputValue = this.amountInputRef.inputRef.value;
     if (this.radioInput.checked) {
       this.setState({
-        inputValue: this.textInput.value
+        inputValue
       });
-      this.props.onInputChange(this.textInput.value);
+      this.props.onInputChange(inputValue);
     }
   },
   onRadioClick: function() {
@@ -95,7 +97,11 @@ var AmountOtherButton = React.createClass({
     return (
       <div className="two-third">
         <div className="amount-other-container">
-          <input ref={(input) => {this.radioInput = input;}} id="amount-other" type="radio" name="donation_amount"
+          <input
+            ref={(input) => {this.radioInput = input;}}
+            id="amount-other"
+            type="radio"
+            name="donation_amount"
             checked={this.props.checked}
             onClick={this.onRadioClick}
             onChange={this.onRadioChange}
@@ -110,7 +116,7 @@ var AmountOtherButton = React.createClass({
             </span>
           </label>
           <div className="amount-other-wrapper">
-            <AmountInput ref={(input) => {this.textInput = input;}}
+            <AmountInput ref={(input) => {this.amountInputRef = input;}}
               id="amount-other-input"
               className="medium-label-size" type="text"
               onInputChange={this.props.onInputChange}
@@ -139,20 +145,23 @@ var AmountButtons = React.createClass({
       userInputting: false
     };
   },
-  onChange: function(amount) {
-    this.setAmount(amount, false);
-  },
-  setAmount: function(amount, userInputting) {
+  onChange: function(position) {
     this.setState({
-      userInputting: userInputting
+      userInputting: false
     });
-    this.props.setAmount(amount);
+    this.props.setPosition(position);
   },
   otherRadioChange: function() {
-    this.setAmount("", true);
+    this.setState({
+      userInputting: true
+    });
+    this.props.setAmount("");
   },
   otherInputChange: function(newAmount) {
-    this.setAmount(newAmount, true);
+    this.setState({
+      userInputting: true
+    });
+    this.props.setAmount(newAmount);
   },
   renderErrorMessage: function() {
     if (this.props.amountError === 'donation_min_error') {
@@ -194,15 +203,19 @@ var AmountButtons = React.createClass({
     return (
       <div className="amount-buttons">
         <div className="row donation-amount-row">
-          <AmountButton value={presets[0]} currencyCode={currency.code} amount={amount}
+          <AmountButton value={presets[0]} position={0}
+            currencyCode={currency.code} amount={amount}
             onChange={this.onChange}/>
-          <AmountButton value={presets[1]} currencyCode={currency.code} amount={amount}
+          <AmountButton value={presets[1]} position={1}
+            currencyCode={currency.code} amount={amount}
             onChange={this.onChange}/>
-          <AmountButton value={presets[2]} currencyCode={currency.code} amount={amount}
+          <AmountButton value={presets[2]} position={2}
+            currencyCode={currency.code} amount={amount}
             onChange={this.onChange}/>
         </div>
         <div className="row donation-amount-row">
-          <AmountButton value={presets[3]} currencyCode={currency.code} amount={amount}
+          <AmountButton value={presets[3]} position={3}
+            currencyCode={currency.code} amount={amount}
             onChange={this.onChange}/>
           <AmountOtherButton amount={otherAmount}
             currencySymbol={currency.symbol}
@@ -231,6 +244,9 @@ module.exports = connect(
     return {
       setAmount: function(data) {
         dispatch(setAmount(data));
+      },
+      setPosition: function(data) {
+        dispatch(setPosition(data));
       }
     };
   })(AmountButtons);

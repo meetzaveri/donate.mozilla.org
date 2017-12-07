@@ -68,6 +68,7 @@ var AmountInput = React.createClass({
     var type = this.props.type || "";
     return (
       <input id={id}
+        ref={(input) => {this.inputRef = input;}}
         className={className}
         type={type}
         value={inputValue}

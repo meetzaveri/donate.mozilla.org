@@ -6,6 +6,10 @@ export function setAmount(data) {
   return { type: 'SET_AMOUNT', data };
 }
 
+export function setPosition(data) {
+  return { type: 'SET_POSITION', data };
+}
+
 export function setAmountError(data) {
   return { type: 'SET_AMOUNT_ERROR', data };
 }
